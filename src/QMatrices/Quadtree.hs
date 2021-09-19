@@ -3,11 +3,15 @@ module Quadtree where
 data QMatrix a = Leaf a | Branch (QMatrix a) (QMatrix a) (QMatrix a) (QMatrix a)
     deriving (Eq, Show)
 
-fold :: (Eq a) => QMatrix a -> QMatrix a
+fold :: Eq a => QMatrix a -> QMatrix a
 fold (Leaf a) = Leaf a
-fold (Branch tl tr bl br)
-    | tl == tr && tr == bl && bl == br = fold tl
-    | otherwise = Branch (fold tl) (fold tr) (fold bl) (fold br)
+fold (Branch tl tr bl br) = fold' (Branch (fold tl) (fold tr ) (fold bl) (fold br))
+    where
+        fold' :: Eq a => QMatrix a -> QMatrix a
+        fold' (Branch a@(Leaf tl) b@(Leaf tr) c@(Leaf bl) d@(Leaf br))
+            | tl == tr && tr == bl && bl == br = a
+            | otherwise = Branch a b c d
+        fold' p = p
 
 instance (Num a, Eq a) => Num (QMatrix a) where
     (Leaf a) + (Leaf b) = Leaf (a + b)
