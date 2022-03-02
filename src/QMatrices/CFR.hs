@@ -7,7 +7,7 @@ import QuadtreePar
 type Nonterminal = Char
 type Terminal = Char
 
-data Rule = Epsilon Nonterminal | Simple (Nonterminal, Terminal) | Complex (Nonterminal, (Terminal, Terminal))
+data Rule = Epsilon Nonterminal | Simple (Nonterminal, Terminal) | Complex (Nonterminal, (Nonterminal, Nonterminal))
 
 data Grammar = Grammar {alphabet :: [Char], nonterminals :: [Char], rules :: [Rule], start :: Char}
 
