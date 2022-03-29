@@ -46,18 +46,6 @@ solve_e' graph = if graph == res then graph else solve_e' res where
 transform :: NewGraph -> Nonterminal -> QMatrix Bool
 transform (Leaf (Set (n, _)) k) start = Leaf (elem start n) k
 transform (Branch tl tr bl br) start = Branch (transform tl start) (transform tr start) (transform bl start) (transform br start)
-        
--- solve :: Graph -> Grammar -> QMatrix Bool
--- solve graph_old grammar = solve' (convert graph_old (rules grammar)) grammar where
---     solve' :: NewGraph -> Grammar -> QMatrix Bool
---     solve' graph grammar = if changed then solve' graph_new grammar else QuadtreePar.fold $ transform graph_new (start grammar) where
---         (graph_new, changed) = solve'' graph
---         solve'' :: NewGraph -> (NewGraph, Bool)
---         solve'' graph = (result, graph /= result) where
---             result = graph + graph * graph
---         transform :: NewGraph -> Nonterminal -> QMatrix Bool
---         transform (Leaf (Set (n, _)) k) start = Leaf (elem start n) k
---         transform (Branch tl tr bl br) start = Branch (transform tl start) (transform tr start) (transform bl start) (transform br start)
 
 convert :: Graph -> [Rule] -> NewGraph
 convert (Leaf l k) rules = Leaf (Set (l, rules)) k
