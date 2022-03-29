@@ -39,13 +39,13 @@ instance Semiring Set where
         operation_grammar non1 non2 rules = [l | (Complex (l,(r1,r2))) <- rules, n1 <- non1, n2 <- non2, r1 == n1 && r2 == n2]
 
 solve :: Graph -> Grammar -> QMatrix Bool
-solve graph grammar = transform (solve_e' (convert graph (rules grammar))) (start grammar)-- where
-solve_e' :: NewGraph -> NewGraph
-solve_e' graph = if graph == res then graph else solve_e' res where
-    res = graph * graph + graph
-transform :: NewGraph -> Nonterminal -> QMatrix Bool
-transform (Leaf (Set (n, _)) k) start = Leaf (elem start n) k
-transform (Branch tl tr bl br) start = Branch (transform tl start) (transform tr start) (transform bl start) (transform br start)
+solve graph grammar = transform (solve' (convert graph (rules grammar))) (start grammar) where
+    solve' :: NewGraph -> NewGraph
+    solve' graph = if graph == res then graph else solve' res where
+        res = graph * graph + graph
+    transform :: NewGraph -> Nonterminal -> QMatrix Bool
+    transform (Leaf (Set (n, _)) k) start = Leaf (elem start n) k
+    transform (Branch tl tr bl br) start = Branch (transform tl start) (transform tr start) (transform bl start) (transform br start)
 
 convert :: Graph -> [Rule] -> NewGraph
 convert (Leaf l k) rules = Leaf (Set (l, rules)) k
