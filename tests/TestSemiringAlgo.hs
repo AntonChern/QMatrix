@@ -79,56 +79,19 @@ prepareGraph string grammar = let list = map words (lines string)
                                   matrix = listToQMWith (map (\(i:j:[a]) -> ((read i :: Int, read j :: Int), map toLower a)) list) []
                               in one_step matrix grammar
 
--- filt :: String -> String
--- filt "A" = "e"
--- filt "D" = "b"
--- 
--- prepareGraph :: String -> Grammar -> Graph
--- prepareGraph string grammar = let list = map words (lines string)
---                                   matrix = listToQMWith (concatMap (\(i:j:[a]) -> [((read i :: Int, read j :: Int), map toLower a), ((read j :: Int, read i :: Int), filt a)]) list) []
---                               in one_step matrix grammar
-
--- main :: IO ()
--- main = do
---     string <- readFile "bzip.csv"
---     let graph_big = prepareGraph string grammar_big
---     defaultMain [
---         bgroup "base" [bench "bin_tree" $ whnf (\(x, y) -> answer_bintree == solve x y) (graph_bintree, grammar_bintree)
---                , bench "cycle"  $ whnf (\(x, y) -> answer_cycle == solve x y) (graph_cycle, grammar_cycle)
---                , bench "line" $ whnf (\(x, y) -> answer_line == solve x y) (graph_line, grammar_line)
---                , bench "loop" $ whnf (\(x, y) -> answer_loop == solve x y) (graph_loop, grammar_loop)
---                , bench "two_cycles" $ whnf (\(x, y) -> answer_two_cycles == solve x y) (graph_two_cycles, grammar_two_cycles)
---                ]--,
---         bgroup "big_data" [bench "example" $ whnf (\(x, y) -> solve x y) (graph_big, grammar_big)
---                    ]
---         ]
-
-getTimes :: [Double] -> Int -> IO ([Double])
-getTimes x _ = do
-    string <- readFile "wc.csv"
-    let graph_big = prepareGraph string grammar_big
-    start <- getCurrentTime
-    writeFile "writer.txt" (show $ solve graph_big grammar_big)
-    stop <- getCurrentTime
-    return ((readDouble (show $ diffUTCTime stop start)) : x)
-
-stddevs :: [Double] -> Double -> Double
-stddevs [] _ = 0.0
-stddevs (x:xs) y = (x - y) ** 2 + stddevs xs y
-    
-readDouble :: String -> Double
-readDouble x = read (reverse (tail (reverse x))) :: Double
-    
 main :: IO ()
 main = do
-    times <- foldM getTimes [] [1..2]
-    iterations <- return (read (show $ length times) :: Double)
-    mean <- return $ (sum times) / iterations
-    print (times)
-    putStrLn $ show (mean)
-    print (sqrt $ (stddevs times mean) / iterations)
-
-
--- grammar_big = Grammar {terminals = ['a', 'd', 'e', 'b'], nonterminals = ['S', 'E', 'B', 'A', 'D', 'V', 'T', 'X', 'Y', 'Z', 'P', 'R'], rules = [(Epsilon 'X'),(Epsilon 'Y'),(Epsilon 'Z'),(Simple ('E','e')),(Simple ('B','b')),(Simple ('A','a')),(Simple ('D','d')),(Complex ('S',('B','T'))),(Complex ('T',('V','D'))),(Complex ('V',('X','P'))),(Complex ('P',('Y','Z'))),(Complex ('X',('Y','R'))),(Complex ('R',('E','X'))),(Complex ('Y',('B','T'))),(Complex ('Z',('A','P')))], start = 'S'}
+    string <- readFile "bzip.csv"
+    let graph_big = prepareGraph string grammar_big
+    defaultMain [
+        bgroup "base" [bench "bin_tree" $ whnf (\(x, y) -> answer_bintree == solve x y) (graph_bintree, grammar_bintree)
+               , bench "cycle"  $ whnf (\(x, y) -> answer_cycle == solve x y) (graph_cycle, grammar_cycle)
+               , bench "line" $ whnf (\(x, y) -> answer_line == solve x y) (graph_line, grammar_line)
+               , bench "loop" $ whnf (\(x, y) -> answer_loop == solve x y) (graph_loop, grammar_loop)
+               , bench "two_cycles" $ whnf (\(x, y) -> answer_two_cycles == solve x y) (graph_two_cycles, grammar_two_cycles)
+               ]--,
+        bgroup "big_data" [bench "example" $ whnf (\(x, y) -> solve x y) (graph_big, grammar_big)
+                   ]
+        ]
 
 grammar_big = Grammar {terminals = ['a', 'd'], nonterminals = ['S', 'A', 'R', 'V', 'D', 'B', 'T', 'C', 'E', 'H', 'P'], rules = [(Simple ('A', 'a')),(Simple ('E', 'a')),(Simple ('T', 'a')),(Simple ('V', 'a')),(Simple ('P', 'a')),(Simple ('D', 'd')),(Simple ('R', 'd')),(Simple ('H', 'd')),(Simple ('B', 'd')),(Complex ('S', ('A', 'R'))),(Complex ('R', ('V', 'D'))),(Complex ('V', ('B', 'T'))),(Complex ('T', ('C', 'E'))),(Complex ('B', ('C', 'H'))),(Complex ('H', ('D', 'B'))),(Complex ('E', ('A', 'P'))),(Complex ('P', ('C', 'E'))),(Complex ('V', ('C', 'E'))),(Complex ('V', ('A', 'P'))),(Complex ('V', ('A', 'R'))),(Complex ('T', ('A', 'P'))),(Complex ('T', ('A', 'R'))),(Complex ('B', ('D', 'B'))),(Complex ('C', ('A', 'R'))),(Complex ('P', ('A', 'P'))),(Complex ('P', ('A', 'R')))], start = 'S'}
