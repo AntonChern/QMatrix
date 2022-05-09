@@ -1,4 +1,4 @@
-module QMatrix where
+module QMatrixPar where
 
 import Data.Semiring
 import Control.DeepSeq
